@@ -48,7 +48,7 @@ function App() {
       setWindowWeb3(new Web3(window.ethereum));
     };
     load();
-  }, [web3.eth]);
+  }, []);
 
   // deploys contract(s)
   const deploy = () => {
