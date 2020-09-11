@@ -24,10 +24,12 @@ function App() {
   const [storageValueInput, setStorageValueInput] = useState(); // user input for contract storage value
   const [storageValue, setStorageValue] = useState(); // contract value; must be fetched by button. a number.
   const [metamaskAccount, setMetamaskAccount] = useState("");
-  const [windowWeb3, setWindowWeb3] = useState();
+  // const [windowWeb3, setWindowWeb3] = useState();
 
   // connect web3 to local ganache node
   const web3 = new Web3("http://localhost:8545");
+  window.ethereum.enable().then((accounts) => setMetamaskAccount(accounts[0]));
+  const windowWeb3 = new Web3(window.ethereum);
 
   // runs once on page load
   useEffect(() => {
@@ -40,22 +42,16 @@ function App() {
         "master account balance",
         `${parseInt(await web3.eth.getBalance(accounts[0])) / wei} ETH`
       );
-
-      // gets account from browser provider, like metamask or TrustWallet
-      // let browserAccounts = await web3.eth.requestAccounts(); // should work but there's some incompatibility
-      let browserAccounts = await window.ethereum.enable();
-      setMetamaskAccount(browserAccounts[0]);
-      setWindowWeb3(new Web3(window.ethereum));
     };
     load();
-  }, []);
+  }, [web3.eth]);
 
   // deploys contract(s)
   const deploy = () => {
     console.log("deploying contract(s)...");
     setDidDeploy(true);
     let simpleStorageContract = new web3.eth.Contract(SimpleStorage.abi);
-    let result = simpleStorageContract
+    simpleStorageContract
       .deploy({ data: SimpleStorage.bin })
       .send({
         from: masterAddress,
