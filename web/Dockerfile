@@ -3,7 +3,7 @@
 ### It should be hosted by a dedicated HTTP server like nginx.
 
 FROM node:14.10.1-stretch
-WORKDIR /src
+WORKDIR /web
 
 # copy package manifest before source code for optimal yarn install caching
 COPY package.json yarn.lock ./
@@ -15,4 +15,4 @@ RUN yarn install
 COPY . .
 
 # build site
-CMD yarn run build
+RUN yarn run build
