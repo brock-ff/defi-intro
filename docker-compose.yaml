@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  # ganache: test chain. Account 0 is unlocked.
+  ganache:
+    image: trufflesuite/ganache-cli:v6.10.2
+    ports:
+      - 8545:8545
+    volumes:
+      - ./keys:/keys
+    command:
+      [
+        "node",
+        "/app/ganache-core.docker.cli.js",
+        "--account_keys_path",
+        "/keys/keys.txt",
+        "--unlock",
+        "0",
+      ]
+  # builds website with web3 & stuff
+  website_build:
+    build: ./web
+    volumes:
+      - ./web:/web
+  # nginx server to host static website
+  website:
+    image: nginx:1.18.0
+    volumes:
+      - ./web/build:/usr/share/nginx/html:ro
+    ports:
+      - 80:80
+    depends_on:
+      - website_build
